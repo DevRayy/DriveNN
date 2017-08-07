@@ -10,3 +10,4 @@ while True:
     # self.j.data.wAxisZ = int(Z * self.MAX_VJOY)
     # self.j.data.wAxisXRot = int(XRot * self.MAX_VJOY)
     j.update()
+    j.set_axis
