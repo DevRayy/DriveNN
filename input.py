@@ -28,15 +28,9 @@ class Input:
     def get(self):
         return [self.X, self.Z]
 
-    # FIXME remove, just for debugging purposes
-    def update(self):
-        self.g.set_x(self.X)
-        self.g.set_z(self.Z)
-
     def run(self):
         while True:
             # print 'X: {}\tLZ: {}\tRZ: {}\tZ: {}'.format(self._X, self._LZ, self._RZ, self.Z)
-            self.update()
             events = get_gamepad()
             for event in events:
                 if event.code == 'ABS_X':
@@ -45,6 +39,3 @@ class Input:
                     self._save_rz(event.state)
                 elif event.code == 'ABS_Z':
                     self._save_lz(event.state)
-
-i = Input()
-i.run()
