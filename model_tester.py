@@ -4,18 +4,19 @@ from grabscreen import grab_screen
 import cv2
 import time
 from alexnet import alexnet
+from inception import inception_v3 as googlenet
 from gamepad import Gamepad
 import settings
 
-WIDTH = settings.IMAGE_RESOLUTION(0)
-HEIGHT = settings.IMAGE_RESOLUTION(1)
+WIDTH = settings.IMAGE_RESOLUTION[0]
+HEIGHT = settings.IMAGE_RESOLUTION[1]
 LR = settings.LEARNING_RATE
 EPOCHS = settings.EPOCHS
-MODEL_NAME = 'driveNN-{}-{}-{}-epochs.model'.format(LR, 'alexnetv2',EPOCHS)
+MODEL_NAME = 'driveNN-{}-{}-{}-epochs.model'.format(LR, 'googlenet',EPOCHS)
 
 g = Gamepad()
 
-model = alexnet(WIDTH, HEIGHT, LR)
+model = googlenet(WIDTH, HEIGHT, LR)
 model.load(MODEL_NAME)
 
 

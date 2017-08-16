@@ -12,20 +12,23 @@ inp = Input()
 thread = threading.Thread(target=inp.run)
 thread.start()
 
-if os.path.isfile(settings.TRAINING_DATA_FILENAME):
-    print('File exists, loading previous data!')
-    training_data = list(np.load(settings.TRAINING_DATA_FILENAME))
-else:
-    print('File does not exist, starting fresh!')
-    training_data = []
+
 
 
 def main():
+    fileno = 2
+    if os.path.isfile(settings.TRAINING_DATA_FILENAME.format(fileno)):
+        print('File exists, loading previous data!')
+        training_data = list(np.load(settings.TRAINING_DATA_FILENAME))
+    else:
+        print('File does not exist, starting fresh!')
+        training_data = []
+
     for i in list(range(5))[::-1]:
         print(i + 1)
         time.sleep(1)
 
-    index = 0;
+    index = 0
     while True:
         last_time = time.time()
         screen = grab_screen(region=settings.SCREEN_BOUNDARIES)
@@ -34,6 +37,7 @@ def main():
         output = inp.get()
 
         m_screen = cv2.flip(screen, 1)
+        cv2.imshow('window', m_screen)
         m_output = [-output[0], output[1]]
 
         if output[1] < 0.9 or random.randrange(10) > 7:
@@ -48,8 +52,10 @@ def main():
         print('loop took {} seconds'.format(time.time() - last_time))
 
         index = index + 1
-        if index % 500 == 0:
+        if index % 2000 == 0:
             print(len(training_data))
-            np.save(settings.TRAINING_DATA_FILENAME, training_data)
+            np.save(settings.TRAINING_DATA_FILENAME.format(fileno), training_data)
+            fileno = fileno + 1
+            training_data = []
 
 main()
