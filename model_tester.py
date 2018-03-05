@@ -39,20 +39,17 @@ def main():
     while True:
         screen = grab_screen(region=settings.SCREEN_BOUNDARIES)
 
-        speed = spd.get()
+        speed_accel = spd.get()
+        speed_accel = [speed_accel[0], speed_accel[1]]
 
         print('loop took {} seconds'.format(time.time() - last_time))
-        if speed is '':
-            print('speed == None, skipping')
-            continue
         last_time = time.time()
         screen = cv2.resize(screen, (WIDTH, HEIGHT))
-        predict = model.predict({'input': screen.reshape(-1, WIDTH, HEIGHT, 3), 'speed': np.array([speed]).reshape(-1, 1)})
+        predict = model.predict({'input': screen.reshape(-1, WIDTH, HEIGHT, 3), 'speed': np.array([speed_accel]).reshape(-1, 2)})[0]
         # predict = model.predict([screen.reshape(WIDTH, HEIGHT, 3), speed])[0]
         print(predict)
-        predict = predict[0]
         g.set_x(predict[0])
-        g.set_z(predict[1])
+        g.set_z(predict[1]*0.7)
 
         time.sleep(0.1)
 

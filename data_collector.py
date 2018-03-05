@@ -19,7 +19,7 @@ thread.start()
 
 
 def main():
-    fileno = 0
+    fileno = 90
 
     spd = Speedometer()
     speed_thread = threading.Thread(target=spd.run)
@@ -43,22 +43,22 @@ def main():
         try:
             screen = grab_screen(region=settings.SCREEN_BOUNDARIES)
             output = inp.get()
+            print('output: {}'.format(output))
         except:
             continue
 
-        # cv2.imshow('window', screen)
+        cv2.imshow('window', screen)
         screen = cv2.resize(screen, settings.IMAGE_RESOLUTION)
 
-        speed = spd.get()
+        speed_accel = spd.get()
+        print('speed_accel: {}'.format(speed_accel))
 
-        m_screen = cv2.flip(screen, 1)
-        # cv2.imshow('window', m_screen)
-        m_output = [-output[0], output[1]]
+        # m_screen = cv2.flip(screen, 1)
+        # m_output = [-output[0], output[1]]
 
-        if speed != 0 and (output[1] < 0.98 or random.randrange(10) > 5):
-            training_data.append([screen, speed, output])
-            training_data.append([m_screen, speed, m_output])
-            print(speed)
+        if speed_accel[0] != 0:
+            training_data.append([screen, speed_accel, output])
+            # training_data.append([m_screen, speed_accel, m_output])
 
         if cv2.waitKey(25) & 0xFF == ord('q'):
             cv2.destroyAllWindows()

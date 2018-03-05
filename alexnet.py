@@ -10,7 +10,7 @@ from tflearn.layers.normalization import local_response_normalization
 
 def alexnet(width, height, lr, output):
     network = input_data(shape=[None, width, height, 3], name='input')
-    speed = input_data(shape=[None, 1], name='speed')
+    speed = input_data(shape=[None, 2], name='speed')
     network = conv_2d(network, 96, 11, strides=4, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = local_response_normalization(network)
@@ -31,12 +31,11 @@ def alexnet(width, height, lr, output):
     network = local_response_normalization(network)
     network = fully_connected(network, 4096, activation='tanh')
     network = dropout(network, 0.5)
-    network = fully_connected(network, 4096, activation='tanh')
+    network = fully_connected(network, 1024, activation='tanh')
     network = dropout(network, 0.5)
-    network = fully_connected(network, 4096, activation='tanh')
+    network = fully_connected(network, 128, activation='tanh')
     network = dropout(network, 0.5)
-    network = fully_connected(network, 4096, activation='tanh')
-    network = dropout(network, 0.5)
+    network = fully_connected(network, 2, activation='tanh')
     network = merge([network, speed], 'concat', axis=1)
     network = fully_connected(network, output, activation='linear')
     network = regression(network, optimizer='momentum',

@@ -8,8 +8,9 @@ import cv2
 class Speedometer:
     def __init__(self):
         self.speed = 0
-        pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
-        self._tessdata_dir_config = '--tessdata-dir "C:/Program Files (x86)/Tesseract-OCR/tessdata"'
+        self.acceleration = 0
+        pytesseract.pytesseract.tesseract_cmd = 'C:/Soft/Tesseract-OCR/tesseract.exe'
+        self._tessdata_dir_config = '--tessdata-dir "C:/Soft/Tesseract-OCR/tessdata"'
 
     def run(self):
         while True:
@@ -19,11 +20,13 @@ class Speedometer:
                 ret, speed_screen = cv2.threshold(speed_screen, 200, 255, cv2.THRESH_BINARY)
                 speed = pytesseract.image_to_string(Image.fromarray(speed_screen), lang='eng', config=self._tessdata_dir_config)
                 try:
-                    self.speed = int(speed)
+                    old_speed = self.speed
+                    self.speed = int(speed) / 100.0
+                    self.acceleration = (self.speed - old_speed) / 25.0
                 except:
                     pass
             except:
                 pass
 
     def get(self):
-        return self.speed
+        return [self.speed, self.acceleration]

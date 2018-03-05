@@ -1,5 +1,4 @@
 from inputs import get_gamepad
-from gamepad import Gamepad
 
 
 class Input:
@@ -9,7 +8,6 @@ class Input:
         self.Z = 0
         self._RZ = 0
         self._LZ = 0
-        self.g = Gamepad()
 
     def _save_x(self, state):
         self.X = state/32767.0

@@ -1,5 +1,6 @@
 import tflearn
 import tensorflow as tf
+from tflearn import embedding
 from tflearn.layers.conv import conv_2d, max_pool_2d,avg_pool_2d, conv_3d, max_pool_3d, avg_pool_3d
 from tflearn.layers.core import input_data, dropout, fully_connected, reshape
 from tflearn.layers.estimator import regression
@@ -9,7 +10,7 @@ from tflearn.layers.merge_ops import merge
 
 def inception_v3(width, height, lr, output=2):
     network = input_data(shape=[None, width, height, 3], name='input')
-    speed = input_data(shape=[None, 1], name='speed')
+    speed = input_data(shape=[None, 2], name='speed')
     conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name='conv1_7_7_s2')
     pool1_3_3 = max_pool_2d(conv1_7_7, 3, strides=2)
     pool1_3_3 = local_response_normalization(pool1_3_3)
@@ -153,9 +154,9 @@ def inception_v3(width, height, lr, output=2):
     print(reshaped)
     print(speed)
 
-    net = merge([reshaped, speed], 'concat', axis=1)
+    net = fully_connected(reshaped, 15, activation='linear')
 
-    net = fully_connected(net, 4096, activation='linear')
+    net = merge([net, speed], 'concat', axis=1)
 
     loss = fully_connected(net, output, activation='linear')
 
