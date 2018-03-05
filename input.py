@@ -2,7 +2,6 @@ from inputs import get_gamepad
 
 
 class Input:
-
     def __init__(self):
         self.X = 0
         self.Z = 0

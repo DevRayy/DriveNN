@@ -5,16 +5,15 @@ from PIL import Image
 import cv2
 import time
 import numpy as np
-from alexnet import alexnet
-from inception import inception_v3 as googlenet
+from nets import inception_v3 as googlenet
 from gamepad import Gamepad
 import settings
 import pytesseract
 from speedometer import Speedometer
 import threading
 
-WIDTH = settings.IMAGE_RESOLUTION[0]
-HEIGHT = settings.IMAGE_RESOLUTION[1]
+WIDTH = settings.TARGET_RESOLUTION[0]
+HEIGHT = settings.TARGET_RESOLUTION[1]
 LR = settings.LEARNING_RATE
 EPOCHS = settings.EPOCHS
 MODEL_NAME = 'driveNN-{}-{}-{}-epochs.model'.format(LR, 'googlenet',EPOCHS)
@@ -37,7 +36,7 @@ def main():
         time.sleep(1)
 
     while True:
-        screen = grab_screen(region=settings.SCREEN_BOUNDARIES)
+        screen = grab_screen(region=settings.MAIN_CAMERA_RECT)
 
         speed_accel = spd.get()
         speed_accel = [speed_accel[0], speed_accel[1]]

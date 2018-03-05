@@ -1,11 +1,10 @@
 import numpy as np
-from alexnet import alexnet
-from inception import inception_v3 as googlenet
+from nets import inception_v3 as googlenet
 from random import shuffle
 import settings
 
-WIDTH = settings.IMAGE_RESOLUTION[0]
-HEIGHT = settings.IMAGE_RESOLUTION[1]
+WIDTH = settings.TARGET_RESOLUTION[0]
+HEIGHT = settings.TARGET_RESOLUTION[1]
 LR = settings.LEARNING_RATE
 EPOCHS = settings.EPOCHS
 MODEL_NAME = 'driveNN-{}-{}-{}-epochs.model'.format(LR, 'googlenet', EPOCHS)

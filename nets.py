@@ -1,11 +1,11 @@
+# alexnet.py
+
 import tflearn
-import tensorflow as tf
-from tflearn import embedding
-from tflearn.layers.conv import conv_2d, max_pool_2d,avg_pool_2d, conv_3d, max_pool_3d, avg_pool_3d
+from tflearn.layers.conv import conv_2d, max_pool_2d, avg_pool_2d
 from tflearn.layers.core import input_data, dropout, fully_connected, reshape
 from tflearn.layers.estimator import regression
-from tflearn.layers.normalization import local_response_normalization
 from tflearn.layers.merge_ops import merge
+from tflearn.layers.normalization import local_response_normalization
 
 
 def inception_v3(width, height, lr, output=2):
@@ -147,24 +147,57 @@ def inception_v3(width, height, lr, output=2):
     pool5_7_7 = avg_pool_2d(inception_5b_output, kernel_size=7, strides=1)
     pool5_7_7 = dropout(pool5_7_7, 0.4)
 
+    # reshaping
     shp = pool5_7_7.get_shape().as_list()
-    print('shp: {}'.format(shp))
     reshaped = reshape(pool5_7_7, [-1, shp[1]*shp[2]*shp[3]])
 
-    print(reshaped)
-    print(speed)
-
     net = fully_connected(reshaped, 15, activation='linear')
-
     net = merge([net, speed], 'concat', axis=1)
-
     loss = fully_connected(net, output, activation='linear')
-
     network = regression(loss, optimizer='momentum',
                          loss='mean_square',
                          learning_rate=lr, name='targets')
 
     model = tflearn.DNN(network,
                         max_checkpoints=0, tensorboard_verbose=0, tensorboard_dir='log')
+    return model
+
+
+def alexnet(width, height, lr, output):
+    network = input_data(shape=[None, width, height, 3], name='input')
+    speed = input_data(shape=[None, 2], name='speed')
+    network = conv_2d(network, 96, 11, strides=4, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = local_response_normalization(network)
+    network = conv_2d(network, 256, 5, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = local_response_normalization(network)
+    network = conv_2d(network, 384, 3, activation='relu')
+    network = conv_2d(network, 384, 3, activation='relu')
+    network = conv_2d(network, 256, 3, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = conv_2d(network, 256, 5, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = local_response_normalization(network)
+    network = conv_2d(network, 384, 3, activation='relu')
+    network = conv_2d(network, 384, 3, activation='relu')
+    network = conv_2d(network, 256, 3, activation='relu')
+    network = max_pool_2d(network, 3, strides=2)
+    network = local_response_normalization(network)
+    network = fully_connected(network, 4096, activation='tanh')
+    network = dropout(network, 0.5)
+    network = fully_connected(network, 1024, activation='tanh')
+    network = dropout(network, 0.5)
+    network = fully_connected(network, 128, activation='tanh')
+    network = dropout(network, 0.5)
+    network = fully_connected(network, 2, activation='tanh')
+    network = merge([network, speed], 'concat', axis=1)
+    network = fully_connected(network, output, activation='linear')
+    network = regression(network, optimizer='momentum',
+                         loss='mean_square',
+                         learning_rate=lr, name='targets')
+
+    model = tflearn.DNN(network, checkpoint_path='model_alexnet',
+                        max_checkpoints=1, tensorboard_verbose=2, tensorboard_dir='log')
 
     return model
