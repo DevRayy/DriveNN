@@ -1,20 +1,21 @@
-import cv2
 import time
+
+import cv2
 import numpy as np
 
 import settings
-from gamepad import Gamepad
 from models import inception_v3 as googlenet
-from vision_gaming.job import Job
-from vision_gaming.process import resize, show_screen, binary_threshold
+from utils.virtual_gamepad import VirtualGamepad
 from vision_gaming.identify import raw_image, match_number
+from vision_gaming.job import Job
+from vision_gaming.process import resize, binary_threshold
 from vision_gaming.vision_system import VisionSystem as VS
 
 WIDTH = settings.TARGET_RESOLUTION[0]
 HEIGHT = settings.TARGET_RESOLUTION[1]
 
 print('Creating virtual gamepad...')
-gamepad = Gamepad()
+gamepad = VirtualGamepad()
 
 print('Loading model...')
 model = googlenet(width=WIDTH,

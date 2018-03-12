@@ -1,7 +1,7 @@
 import pyvjoy
 
 
-class Gamepad:
+class VirtualGamepad:
 
     def __init__(self):
         self._MAX_VJOY = 32767
