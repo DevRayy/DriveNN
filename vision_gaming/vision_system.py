@@ -10,7 +10,7 @@ class VisionSystem:
         self.results = {}
         self.th = None
         self.wait = wait
-        self.is_fresh = False
+        self.fresh = False
 
     def register_job(self, name, job):
         self.jobs[name] = job
@@ -21,7 +21,7 @@ class VisionSystem:
     def loop(self):
         while True:
             self.results = {name: job.do() for name, job in self.jobs.items()}
-            self.is_fresh = True
+            self.fresh = True
             if self.wait is not None:
                 time.sleep(self.wait)
 
@@ -30,5 +30,5 @@ class VisionSystem:
         self.th.start()
 
     def get_results(self):
-        self.is_fresh = False
+        self.fresh = False
         return self.results

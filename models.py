@@ -9,8 +9,8 @@ from tflearn.layers.normalization import local_response_normalization
 
 
 def inception_v3(width, height, lr, output=2):
-    network = input_data(shape=[None, width, height, 3], name='input')
-    speed = input_data(shape=[None, 2], name='speed')
+    network = input_data(shape=[None, width, height, 3], name='main_camera')
+    speed = input_data(shape=[None, 1], name='speed')
     conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name='conv1_7_7_s2')
     pool1_3_3 = max_pool_2d(conv1_7_7, 3, strides=2)
     pool1_3_3 = local_response_normalization(pool1_3_3)
@@ -156,7 +156,7 @@ def inception_v3(width, height, lr, output=2):
     loss = fully_connected(net, output, activation='linear')
     network = regression(loss, optimizer='momentum',
                          loss='mean_square',
-                         learning_rate=lr, name='targets')
+                         learning_rate=lr, name='controller')
 
     model = tflearn.DNN(network,
                         max_checkpoints=0, tensorboard_verbose=0, tensorboard_dir='log')

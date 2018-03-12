@@ -23,7 +23,6 @@ main_camera_job = Job(screen_rect=settings.MAIN_CAMERA_RECT,
                       process=[resize(settings.TARGET_RESOLUTION)],
                       identify=raw_image())
 system.register_job('main_camera', main_camera_job)
-
 templates = [cv2.imread('templates/{}.jpg'.format(i), 1) for i in range(0, 10)]
 speedometer_job = Job(screen_rect=settings.SPEEDOMETER_RECT,
                       process=[binary_threshold(200, 255)],
@@ -32,9 +31,9 @@ system.register_job('speedometer', speedometer_job)
 system.run()
 
 while True:
-    if system.is_fresh:
+    if system.fresh:
         main_camera = system.get_results().get('main_camera')
-        speed = system.get_results().get('speedometer')
+        speed = system.get_results().get('speedometer') / settings.RECORDING_TARGET_SPEED
         controller_state = controller.get()
         data.append([main_camera, speed, controller_state])
 
