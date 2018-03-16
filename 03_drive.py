@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 import settings
-from models import inception_v3 as googlenet
+from models import inception_v3 as googlenet, alexnet
 from utils.virtual_gamepad import VirtualGamepad
 from vision_gaming.identify import raw_image, match_number
 from vision_gaming.job import Job
@@ -47,11 +47,12 @@ while True:
         speed = system.get_results().get('speedometer') / settings.DRIVING_TARGET_SPEED
 
         prediction = model.predict({'main_camera': main_camera.reshape(-1, WIDTH, HEIGHT, 3),
-                                    'speed': np.array([speed])})[0]
-                                    # 'speed': np.array([speed]).reshape(-1, 2)})[0]
-                                    # FIXME remove above when confirmed working
+                                    'speed': np.array([speed]).reshape(-1, 1)})[0]
         print('Prediction: {}'.format(prediction))
         gamepad.set_x(prediction[0])
-        gamepad.set_z(prediction[1])
+        if speed < 1.0:
+            gamepad.set_z(prediction[1])
+        else:
+            gamepad.set_z(0.0)
 
         time.sleep(settings.DRIVING_DELAY)

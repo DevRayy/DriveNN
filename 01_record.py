@@ -8,7 +8,7 @@ import settings
 from utils.input_gamepad import InputGamepad
 from vision_gaming.identify import raw_image, match_number
 from vision_gaming.job import Job
-from vision_gaming.process import resize, binary_threshold
+from vision_gaming.process import resize, binary_threshold, show_screen
 from vision_gaming.vision_system import VisionSystem as VS
 
 # starting file index
@@ -32,11 +32,14 @@ system.register_job('speedometer', speedometer_job)
 system.run()
 
 while True:
-    if system.fresh:
+    if system.fresh and system.get_results().get('speedometer') > 0:
         main_camera = system.get_results().get('main_camera')
         speed = system.get_results().get('speedometer') / settings.RECORDING_TARGET_SPEED
         controller_state = controller.get()
         data.append([main_camera, speed, controller_state])
+
+        if len(data) % (settings.ROWS_PER_FILE / 20) == 0:
+            print('{}/{}'.format(len(data), settings.ROWS_PER_FILE))
 
         if len(data) % settings.ROWS_PER_FILE == 0:
             np.save(settings.TRAINING_DATA_FILENAME.format(fileno), data)

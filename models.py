@@ -151,9 +151,9 @@ def inception_v3(width, height, lr, output=2):
     shp = pool5_7_7.get_shape().as_list()
     reshaped = reshape(pool5_7_7, [-1, shp[1]*shp[2]*shp[3]])
 
-    net = fully_connected(reshaped, 15, activation='linear')
+    net = fully_connected(reshaped, 10, activation='tanh')
     net = merge([net, speed], 'concat', axis=1)
-    loss = fully_connected(net, output, activation='linear')
+    loss = fully_connected(net, output, activation='tanh')
     network = regression(loss, optimizer='momentum',
                          loss='mean_square',
                          learning_rate=lr, name='controller')
@@ -163,9 +163,9 @@ def inception_v3(width, height, lr, output=2):
     return model
 
 
-def alexnet(width, height, lr, output):
-    network = input_data(shape=[None, width, height, 3], name='input')
-    speed = input_data(shape=[None, 2], name='speed')
+def alexnet(width, height, lr, output=2):
+    network = input_data(shape=[None, width, height, 3], name='main_camera')
+    speed = input_data(shape=[None, 1], name='speed')
     network = conv_2d(network, 96, 11, strides=4, activation='relu')
     network = max_pool_2d(network, 3, strides=2)
     network = local_response_normalization(network)
@@ -190,12 +190,12 @@ def alexnet(width, height, lr, output):
     network = dropout(network, 0.5)
     network = fully_connected(network, 128, activation='tanh')
     network = dropout(network, 0.5)
-    network = fully_connected(network, 2, activation='tanh')
+    network = fully_connected(network, 16, activation='tanh')
     network = merge([network, speed], 'concat', axis=1)
-    network = fully_connected(network, output, activation='linear')
-    network = regression(network, optimizer='momentum',
-                         loss='mean_square',
-                         learning_rate=lr, name='targets')
+    network = fully_connected(network, output, activation='tanh')
+    network = regression(network, optimizer='sgd',
+                         loss='hinge_loss',
+                         learning_rate=lr, name='controller')
 
     model = tflearn.DNN(network, checkpoint_path='model_alexnet',
                         max_checkpoints=1, tensorboard_verbose=2, tensorboard_dir='log')

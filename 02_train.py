@@ -2,7 +2,7 @@ from random import shuffle
 import numpy as np
 
 import settings
-from models import inception_v3 as googlenet
+from models import inception_v3 as googlenet, alexnet
 
 WIDTH = settings.TARGET_RESOLUTION[0]
 HEIGHT = settings.TARGET_RESOLUTION[1]
@@ -11,6 +11,7 @@ print('Loading model...')
 model = googlenet(width=WIDTH,
                   height=HEIGHT,
                   lr=settings.LEARNING_RATE)
+model.save(settings.MODEL_NAME)
 
 recorded_data = []
 for i in range(settings.FIRST_FILE_NO, settings.LAST_FILE_NO + 1):
@@ -21,19 +22,16 @@ print('Shuffling training data...')
 shuffle(recorded_data)
 
 print('Preparing to run...')
-training_data = recorded_data[:-settings.TESTING_DATA_FRACTION]
-testing_data = recorded_data[-settings.TESTING_DATA_FRACTION:]
+fraction = int(len(recorded_data) * settings.TESTING_DATA_FRACTION)
+training_data = recorded_data[:-fraction]
+testing_data = recorded_data[-fraction:]
 
 camera_input = np.array([i[0] for i in training_data]).reshape(-1, WIDTH, HEIGHT, 3)
-speed_input = [i[1] for i in training_data]
-# speed_input = np.array([[i[1][0], i[1][1]] for i in training_data]).reshape(-1, 2)
-# FIXME remove amove when confirmed working
+speed_input = np.array([i[1] for i in training_data]).reshape(-1, 1)
 controls_input = [i[2] for i in training_data]
 
 camera_input_test = np.array([i[0] for i in testing_data]).reshape(-1, WIDTH, HEIGHT, 3)
-speed_input_test = [i[1] for i in testing_data]
-# speed_input_test = np.array([[i[1][0], i[1][1]] for i in testing_data]).reshape(-1, 2)
-# FIXME remove amove when confirmed working
+speed_input_test = np.array([i[1] for i in testing_data]).reshape(-1, 1)
 controls_input_test = [i[2] for i in testing_data]
 
 print('Learning started!')
