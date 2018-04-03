@@ -48,6 +48,8 @@ while True:
 
         prediction = model.predict({'main_camera': main_camera.reshape(-1, WIDTH, HEIGHT, 3),
                                     'speed': np.array([speed]).reshape(-1, 1)})[0]
+        prediction[0] = (prediction[0] * 2) - 1
+        prediction[1] = (prediction[1] * 2) - 1
         print('Prediction: {}'.format(prediction))
         gamepad.set_x(prediction[0])
         if speed < 1.0:
