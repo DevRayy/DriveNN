@@ -1,7 +1,6 @@
-# Done by Frannecklp
-
 import cv2
 import numpy as np
+import pywintypes
 import win32gui, win32ui, win32con, win32api
 
 
