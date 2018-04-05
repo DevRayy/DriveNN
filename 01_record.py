@@ -3,7 +3,7 @@ import time
 
 import numpy as np
 
-import pcars
+from pcars import Pcars
 import settings
 from utils.input_gamepad import InputGamepad
 from vision_gaming.identify import raw_image
@@ -27,12 +27,16 @@ main_camera_job = Job(screen_rect=settings.MAIN_CAMERA_RECT,
 system.register_job('main_camera', main_camera_job)
 system.run()
 
+pcars = Pcars()
+
 while True:
     if system.fresh and pcars.is_running():
         main_camera = system.get_results().get('main_camera')
-        game_state = pcars.get_data(include_gps=True)
+        pcars.snapshot()
+        car_state = pcars.car_data()
+        gps_state = pcars.gps_data()
         controller_state = controller.get()
-        data.append([main_camera, game_state, controller_state])
+        data.append([main_camera, car_state, gps_state, controller_state])
 
         if len(data) % (settings.ROWS_PER_FILE / 20) == 0:
             print('{}/{}'.format(len(data), settings.ROWS_PER_FILE))

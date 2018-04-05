@@ -3,6 +3,7 @@ import time
 import numpy as np
 
 import pcars
+from pcars import Pcars
 import settings
 from models import inception_v3 as googlenet
 from utils.virtual_gamepad import VirtualGamepad
@@ -31,6 +32,8 @@ main_camera_job = Job(screen_rect=settings.MAIN_CAMERA_RECT,
 system.register_job('main_camera', main_camera_job)
 system.run()
 
+cars = Pcars()
+
 print('Starting...')
 for i in list(range(5))[::-1]:
     print(i + 1)
@@ -39,10 +42,13 @@ for i in list(range(5))[::-1]:
 while True:
     if system.fresh:
         main_camera = system.get_results().get('main_camera')
-        game_state = pcars.get_data(include_gps=True)
+        cars.snapshot()
+        car_state = cars.car_data()
+        gps_state = cars.gps_data()
 
         prediction = model.predict({'main_camera': main_camera.reshape(-1, WIDTH, HEIGHT, 3),
-                                    'game_state': np.array([game_state]).reshape(-1, 19)})[0]
+                                    'car_state': np.array([car_state]).reshape(-1, pcars.CAR_DATA_LEN),
+                                    'gps_state': np.array([gps_state]).reshape(-1, pcars.GPS_DATA_LEN)})[0]
         prediction[0] = (prediction[0] * 2) - 1
         prediction[1] = (prediction[1] * 2) - 1
         print('Prediction: {}'.format(prediction))

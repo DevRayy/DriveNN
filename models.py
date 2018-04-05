@@ -1,6 +1,7 @@
 # alexnet.py
 
 import tflearn
+import pcars
 from tflearn.layers.conv import conv_2d, max_pool_2d, avg_pool_2d
 from tflearn.layers.core import input_data, dropout, fully_connected, reshape
 from tflearn.layers.estimator import regression
@@ -10,7 +11,8 @@ from tflearn.layers.normalization import local_response_normalization
 
 def inception_v3(width, height, lr, output=2):
     network = input_data(shape=[None, width, height, 3], name='main_camera')
-    speed = input_data(shape=[None, 19], name='game_state')
+    car_state = input_data(shape=[None, pcars.CAR_DATA_LEN], name='car_state')
+    gps_state = input_data(shape=[None, pcars.GPS_DATA_LEN], name='gps_state')
     conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name='conv1_7_7_s2')
     pool1_3_3 = max_pool_2d(conv1_7_7, 3, strides=2)
     pool1_3_3 = local_response_normalization(pool1_3_3)
@@ -152,7 +154,7 @@ def inception_v3(width, height, lr, output=2):
     reshaped = reshape(pool5_7_7, [-1, shp[1]*shp[2]*shp[3]])
 
     net = fully_connected(reshaped, 20, activation='tanh')
-    net = merge([net, speed], 'concat', axis=1)
+    net = merge([net, car_state, gps_state], 'concat', axis=1)
     net = fully_connected(net, 64, activation='relu')
     net = fully_connected(net, 128, activation='relu')
     net = fully_connected(net, 64, activation='relu')
