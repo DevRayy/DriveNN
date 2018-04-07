@@ -6,7 +6,7 @@ from tflearn.layers.conv import conv_2d, max_pool_2d, avg_pool_2d
 from tflearn.layers.core import input_data, dropout, fully_connected, reshape
 from tflearn.layers.estimator import regression
 from tflearn.layers.merge_ops import merge
-from tflearn.layers.normalization import local_response_normalization
+from tflearn.layers.normalization import local_response_normalization, batch_normalization
 
 
 def inception_v3(width, height, lr, output=2):
@@ -153,12 +153,16 @@ def inception_v3(width, height, lr, output=2):
     shp = pool5_7_7.get_shape().as_list()
     reshaped = reshape(pool5_7_7, [-1, shp[1]*shp[2]*shp[3]])
 
-    net = fully_connected(reshaped, 20, activation='tanh')
+    net = fully_connected(reshaped, 20, activation='relu')
     net = merge([net, car_state, gps_state], 'concat', axis=1)
-    net = fully_connected(net, 64, activation='relu')
+    net = fully_connected(net, 64)
+    net = batch_normalization(net, trainable=True)
     net = fully_connected(net, 128, activation='relu')
+    net = batch_normalization(net, trainable=True)
     net = fully_connected(net, 64, activation='relu')
+    net = batch_normalization(net, trainable=True)
     net = fully_connected(net, 16, activation='relu')
+    net = batch_normalization(net, trainable=True)
     loss = fully_connected(net, output, activation='tanh')
     network = regression(loss, optimizer='momentum',
                          loss='mean_square',
