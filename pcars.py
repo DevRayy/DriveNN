@@ -2,7 +2,7 @@ import carseour
 import settings
 
 CAR_DATA_LEN = 9
-GPS_DATA_LEN = 10
+GPS_DATA_LEN = 9
 
 
 class Pcars:
@@ -38,6 +38,5 @@ class Pcars:
             self.raw_state.mWorldAcceleration[2] / settings.ACCELERATION_NORM,
             self.raw_state.players()[0].mWorldPosition[0] / settings.TRACK_BOUNDS,
             self.raw_state.players()[0].mWorldPosition[1] / settings.TRACK_BOUNDS,
-            self.raw_state.players()[0].mWorldPosition[2] / settings.TRACK_BOUNDS,
-            self.raw_state.players()[0].mCurrentLapDistance / settings.LAP_LENGTH
+            self.raw_state.players()[0].mWorldPosition[2] / settings.TRACK_BOUNDS
         ]

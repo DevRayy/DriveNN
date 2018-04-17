@@ -159,10 +159,27 @@ def inception_v3(width, height, lr, output=2):
     net = batch_normalization(net, trainable=True)
     net = fully_connected(net, 128, activation='relu')
     net = batch_normalization(net, trainable=True)
-    net = fully_connected(net, 64, activation='relu')
+    net = fully_connected(net, 32, activation='relu')
+    loss = fully_connected(net, output, activation='tanh')
+    network = regression(loss, optimizer='momentum',
+                         loss='mean_square',
+                         learning_rate=lr, name='controller')
+
+    model = tflearn.DNN(network,
+                        max_checkpoints=0, tensorboard_verbose=0, tensorboard_dir='log')
+    return model
+
+
+def inception_v3_raw(lr, output=2):
+    car_state = input_data(shape=[None, pcars.CAR_DATA_LEN], name='car_state')
+    gps_state = input_data(shape=[None, pcars.GPS_DATA_LEN], name='gps_state')
+
+    net = merge([car_state, gps_state], 'concat', axis=1)
+    net = fully_connected(net, 16)
     net = batch_normalization(net, trainable=True)
-    net = fully_connected(net, 16, activation='relu')
+    net = fully_connected(net, 32, activation='relu')
     net = batch_normalization(net, trainable=True)
+    net = fully_connected(net, 8, activation='relu')
     loss = fully_connected(net, output, activation='tanh')
     network = regression(loss, optimizer='momentum',
                          loss='mean_square',

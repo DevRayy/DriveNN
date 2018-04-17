@@ -1,17 +1,16 @@
-from random import shuffle
+from random import shuffle, random
 import numpy as np
 
 import settings
 import pcars
 from models import inception_v3 as googlenet
+from models import inception_v3_raw as googlenet_raw
 
 WIDTH = settings.TARGET_RESOLUTION[0]
 HEIGHT = settings.TARGET_RESOLUTION[1]
 
 print('Loading model...')
-model = googlenet(width=WIDTH,
-                  height=HEIGHT,
-                  lr=settings.LEARNING_RATE)
+model = googlenet(width=WIDTH, height=HEIGHT, lr=settings.LEARNING_RATE)
 model.save(settings.MODEL_NAME)
 
 recorded_data = []

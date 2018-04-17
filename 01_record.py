@@ -13,7 +13,7 @@ from vision_gaming.vision_system import VisionSystem as VS
 
 
 # starting file index
-fileno = 0
+fileno = 19
 data = []
 start_time = time.time()
 
