@@ -9,10 +9,10 @@ from tflearn.layers.merge_ops import merge
 from tflearn.layers.normalization import local_response_normalization, batch_normalization
 
 
-def inception_v3(width, height, lr, output=2):
+def inception_v3(width, height, lr, game_state_len):
     network = input_data(shape=[None, width, height, 3], name='main_camera')
-    car_state = input_data(shape=[None, pcars.CAR_DATA_LEN], name='car_state')
-    gps_state = input_data(shape=[None, pcars.GPS_DATA_LEN], name='gps_state')
+    game_state = input_data(shape=[None, game_state_len], name='game_state')
+    # gps_state = input_data(shape=[None, pcars.GPS_DATA_LEN], name='gps_state')
     conv1_7_7 = conv_2d(network, 64, 7, strides=2, activation='relu', name='conv1_7_7_s2')
     pool1_3_3 = max_pool_2d(conv1_7_7, 3, strides=2)
     pool1_3_3 = local_response_normalization(pool1_3_3)
@@ -154,13 +154,13 @@ def inception_v3(width, height, lr, output=2):
     reshaped = reshape(pool5_7_7, [-1, shp[1]*shp[2]*shp[3]])
 
     net = fully_connected(reshaped, 20, activation='relu')
-    net = merge([net, car_state, gps_state], 'concat', axis=1)
-    net = fully_connected(net, 64)
+    net = merge([net, game_state], 'concat', axis=1)
+    net = fully_connected(net, 32)
     net = batch_normalization(net, trainable=True)
-    net = fully_connected(net, 128, activation='relu')
+    net = fully_connected(net, 64, activation='relu')
     net = batch_normalization(net, trainable=True)
-    net = fully_connected(net, 32, activation='relu')
-    loss = fully_connected(net, output, activation='tanh')
+    net = fully_connected(net, 16, activation='relu')
+    loss = fully_connected(net, 2, activation='tanh')
     network = regression(loss, optimizer='momentum',
                          loss='mean_square',
                          learning_rate=lr, name='controller')

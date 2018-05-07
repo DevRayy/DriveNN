@@ -13,7 +13,7 @@ from vision_gaming.vision_system import VisionSystem as VS
 
 
 # starting file index
-fileno = 19
+fileno = 0
 data = []
 start_time = time.time()
 
@@ -33,10 +33,9 @@ while True:
     if system.fresh and pcars.is_running():
         main_camera = system.get_results().get('main_camera')
         pcars.snapshot()
-        car_state = pcars.car_data()
-        gps_state = pcars.gps_data()
+        game_state = pcars.get_data()
         controller_state = controller.get()
-        data.append([main_camera, car_state, gps_state, controller_state])
+        data.append([main_camera, game_state, controller_state])
 
         if len(data) % (settings.ROWS_PER_FILE / 20) == 0:
             print('{}/{}'.format(len(data), settings.ROWS_PER_FILE))
