@@ -12,7 +12,7 @@ def highlight_road(image):
         for j in range(0, width):
             R, G, B = image[i, j]
             if is_gray(R, G, B):
-                image[i, j] = [255, 255, 255]
+                image[i, j] = [255]
             else:
                 image[i, j] = [0, 0, 0]
 
@@ -31,7 +31,10 @@ WIDTH = settings.TARGET_RESOLUTION[0]
 HEIGHT = settings.TARGET_RESOLUTION[1]
 
 data = np.load('data_recorded/kart_chesterfield/raw-10.npy')
-frame = data[150]
+frame = data[100]
 image = frame[0]
 
-highlight_road(image)
+image = highlight_road(image)
+
+cv2.imshow('image', image)
+cv2.waitKey(0)

@@ -1,8 +1,7 @@
 import settings
 import numpy as np
 import pcars
-from utils import normalize
-
+from utils.utils import normalize, highlight_road
 
 recorded_data = []
 for i in range(settings.FIRST_FILE_NO, settings.LAST_FILE_NO + 1):
@@ -28,10 +27,12 @@ for i in range(pcars.DATA_LEN):
     thresholds[i] = maxes[i] if abs(maxes[i]) > abs(mins[i]) else mins[i]
 
 print("Saving thresholds...")
+print(thresholds)
 np.save(settings.METADATA_FILENAME, thresholds)
 
 print("Normalizing...")
 for i in range(len(recorded_data)):
+    recorded_data[i][0] = highlight_road(recorded_data[i][0], road_value=1)
     recorded_data[i][1] = normalize(recorded_data[i][1], thresholds)
 
 print("Saving...")
